@@ -10,8 +10,10 @@ const unsigned int WINDOW_HEIGHT = 600;
 const char* vertexShaderSource = R"(
     #version 330 core
     layout (location = 0) in vec3 aPos;
+    uniform vec2 offset;
+
     void main() {
-        gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+        gl_Position = vec4(aPos.x + offset.x, aPos.y + offset.y, aPos.z, 1.0);
     }
 )";
 
@@ -134,6 +136,9 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    // 获取uniform变量的位置
+    int offsetLocation = glGetUniformLocation(shaderProgram, "offset");
+
     // 渲染循环
     while (!glfwWindowShouldClose(window)) {
         // 检查是否需要关闭窗口
@@ -143,7 +148,7 @@ int main() {
 
         // 使用时间来更新偏移量，实现自动移动效果
         float time = glfwGetTime();
-        float speed = 0.05f;
+        float speed = 0.5f;
         float offsetX = sin(time * speed);
         float offsetY = cos(time * speed);
 
@@ -154,15 +159,8 @@ int main() {
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
 
-        // 更新顶点数据，根据偏移量移动正方形
-        float updatedVertices[] = {
-            -0.5f + offsetX, -0.5f + offsetY, 0.0f,
-             0.5f + offsetX, -0.5f + offsetY, 0.0f,
-             0.5f + offsetX,  0.5f + offsetY, 0.0f,
-            -0.5f + offsetX,  0.5f + offsetY, 0.0f,
-        };
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(updatedVertices), updatedVertices, GL_STATIC_DRAW);
+        // 更新偏移量uniform变量的值
+        glUniform2f(offsetLocation, offsetX, offsetY);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
