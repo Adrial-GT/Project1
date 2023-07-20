@@ -33,5 +33,8 @@
     <ClCompile Include="move3.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="box_3d.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

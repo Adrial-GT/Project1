@@ -1,3 +1,4 @@
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -32,6 +33,8 @@ int main() {
         std::cout << "GLFW³õÊ¼»¯Ê§°Ü£¡" << std::endl;
         return -1;
     }
+
+
 
     // ÅäÖÃGLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
