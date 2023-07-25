@@ -36,5 +36,14 @@
     <ClCompile Include="box_3d.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="colorbar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="circle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="circle1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
