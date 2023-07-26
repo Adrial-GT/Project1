@@ -14,21 +14,32 @@ void main()
 
 const char* fragmentShaderSource = R"(
 #version 330 core
-uniform vec2 u_mouse;
 out vec4 FragColor;
 void main()
 {
-    vec3 color = vec3(u_mouse.x, 0.5, 0.5);
-    FragColor = vec4(color, 1.0);
+    float y = gl_FragCoord.y;
+    float height = 600.0;
+    float stripeHeight = height / 6.0; // 6个颜色
+
+    vec3 color;
+
+    if (y < stripeHeight)
+        color = vec3(1.0, 0.0, 0.0); // 红色
+    else if (y < 2.0 * stripeHeight)
+        color = vec3(1.0, 1.0, 0.0); // 黄色
+    else if (y < 3.0 * stripeHeight)
+        color = vec3(0.0, 0.0, 1.0); // 蓝色
+    else if (y < 4.0 * stripeHeight)
+        color = vec3(0.0, 1.0, 0.0); // 绿色
+    else if (y < 5.0 * stripeHeight)
+        color = vec3(1.0, 0.0, 1.0); // 紫色
+    else
+        color = vec3(0.0); // 黑色，用于添加间隔
+
+    float t = mod(y, stripeHeight) / stripeHeight; // 计算在当前颜色条带内的插值参数
+    FragColor = vec4(mix(color, vec3(0.0), t), 1.0);
 }
 )";
-
-// Mouse position
-double mouseX = 0.0;
-
-// Function prototypes
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 int main()
 {
@@ -60,10 +71,6 @@ int main()
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
-    // Register callbacks
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, cursor_position_callback);
-
     // Create and compile the vertex shader
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -89,10 +96,10 @@ int main()
 
     // Set up vertex data and buffers
     float vertices[] = {
-        -1.0f, -0.1f, 0.0f, // Left-bottom vertex
-         1.0f, -0.1f, 0.0f, // Right-bottom vertex
-         1.0f,  0.1f, 0.0f, // Right-top vertex
-        -1.0f,  0.1f, 0.0f  // Left-top vertex
+        -1.0f, -1.0f, 0.0f, // Left-bottom vertex
+         1.0f, -1.0f, 0.0f, // Right-bottom vertex
+         1.0f,  1.0f, 0.0f, // Right-top vertex
+        -1.0f,  1.0f, 0.0f  // Left-top vertex
     };
 
     unsigned int indices[] = {
@@ -129,10 +136,6 @@ int main()
         // Use the shader program
         glUseProgram(shaderProgram);
 
-        // Set the mouse position as a uniform
-        int mouseLocation = glGetUniformLocation(shaderProgram, "u_mouse");
-        glUniform2f(mouseLocation, static_cast<float>(mouseX), 0.5f);
-
         // Draw the color bar
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -149,19 +152,4 @@ int main()
 
     glfwTerminate();
     return 0;
-}
-
-// Framebuffer resize callback
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-
-// Cursor position callback
-void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    // Normalize the mouse position to the range [-1, 1]
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-    mouseX = static_cast<float>(xpos) / width * 2.0f - 1.0f;
 }
