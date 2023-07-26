@@ -54,5 +54,11 @@
     <ClCompile Include="colorbar3.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="circle2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="circle3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -7,29 +7,87 @@
 const char* vertexShaderSource = R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aColor;
+
+out vec3 Color;
+
 void main()
 {
     gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+    Color = aColor;
 }
 )";
 
 const char* fragmentShaderSource = R"(
 #version 330 core
 out vec4 FragColor;
+
+in vec3 Color;
+uniform float innerRadius;
+uniform float outerRadius;
 uniform float progress;
+
 void main()
 {
     vec2 center = vec2(0.0, 0.0);
-    float radius = 0.5;
-    float angle = atan(gl_FragCoord.y - center.y, gl_FragCoord.x - center.x);
     float length = length(gl_FragCoord.xy - center.xy);
     
-    if (length <= radius && angle < progress)
-        FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red color for the progress
-    else
-        FragColor = vec4(0.2, 0.2, 0.2, 1.0); // Gray color for the background
+    float outerCircle = smoothstep(outerRadius, outerRadius + 0.02, length);
+    float innerCircle = smoothstep(innerRadius, innerRadius + 0.02, length);
+    float circle = outerCircle - innerCircle;
+    
+    // Calculate progress bar position
+    float barStart = innerRadius;
+    float barEnd = mix(innerRadius, outerRadius, progress);
+    float progressBar = smoothstep(barStart, barEnd, length);
+    
+    // Check if the current pixel is within the circular progress bar
+    float barMask = step(outerRadius, length) * (1.0 - step(innerRadius, length));
+    
+    // Calculate final color based on progress
+    vec3 finalColor = mix(vec3(0.2, 0.2, 0.2), Color, progressBar);
+    
+    // Apply the color
+    FragColor = vec4(finalColor, 1.0) * circle * barMask;
 }
 )";
+
+float* generateCircleVertices(float radius, int numSegments) {
+    const float PI = 3.14159265359f;
+    float* vertices = new float[(numSegments + 2) * 6]; // 2 extra vertices for center and starting point
+    int centerIndex = 0;
+    int startingIndex = 6;
+    float angleStep = 2.0f * PI / numSegments;
+
+    // Center vertex
+    vertices[centerIndex] = 0.0f;
+    vertices[centerIndex + 1] = 0.0f;
+    vertices[centerIndex + 2] = 0.0f;
+    vertices[centerIndex + 3] = 0.2f;
+    vertices[centerIndex + 4] = 0.2f;
+    vertices[centerIndex + 5] = 0.2f;
+
+    // Starting point vertex
+    vertices[startingIndex] = radius;
+    vertices[startingIndex + 1] = 0.0f;
+    vertices[startingIndex + 2] = 0.0f;
+    vertices[startingIndex + 3] = 1.0f;
+    vertices[startingIndex + 4] = 0.0f;
+    vertices[startingIndex + 5] = 0.0f;
+
+    for (int i = 1; i <= numSegments; ++i) {
+        float angle = angleStep * i;
+        int vertexIndex = startingIndex + i * 6;
+        vertices[vertexIndex] = radius * cos(angle);
+        vertices[vertexIndex + 1] = radius * sin(angle);
+        vertices[vertexIndex + 2] = 0.0f;
+        vertices[vertexIndex + 3] = 1.0f;
+        vertices[vertexIndex + 4] = 0.0f;
+        vertices[vertexIndex + 5] = 0.0f;
+    }
+
+    return vertices;
+}
 
 int main()
 {
@@ -85,33 +143,22 @@ int main()
     glDeleteShader(fragmentShader);
 
     // Set up vertex data and buffers
-    float vertices[] = {
-        -1.0f, -1.0f, 0.0f, // Left-bottom vertex
-         1.0f, -1.0f, 0.0f, // Right-bottom vertex
-         1.0f,  1.0f, 0.0f, // Right-top vertex
-        -1.0f,  1.0f, 0.0f  // Left-top vertex
-    };
+    const int numSegments = 100;
+    float* vertices = generateCircleVertices(0.6f, numSegments);
 
-    unsigned int indices[] = {
-        0, 1, 2, // First triangle
-        0, 2, 3  // Second triangle
-    };
-
-    unsigned int VAO, VBO, EBO;
+    unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (numSegments + 2) * 6 * sizeof(float), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // Main render loop
     while (!glfwWindowShouldClose(window))
@@ -129,22 +176,28 @@ int main()
         // Use the shader program
         glUseProgram(shaderProgram);
 
-        // Set the progress uniform variable in the fragment shader
+        // Set the color and progress uniform variables in the fragment shader
+        int innerRadiusLoc = glGetUniformLocation(shaderProgram, "innerRadius");
+        glUniform1f(innerRadiusLoc, 0.4f); // Inner circle radius
+
+        int outerRadiusLoc = glGetUniformLocation(shaderProgram, "outerRadius");
+        glUniform1f(outerRadiusLoc, 0.6f); // Outer circle radius
+
         int progressLoc = glGetUniformLocation(shaderProgram, "progress");
         glUniform1f(progressLoc, progress);
 
         // Draw the circular progress bar
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, numSegments + 2);
 
         // Swap buffers and poll IO events
         glfwSwapBuffers(window);
     }
 
     // Cleanup and exit
+    delete[] vertices;
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
 
     glfwTerminate();
