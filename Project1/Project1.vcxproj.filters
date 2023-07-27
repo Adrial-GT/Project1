@@ -60,5 +60,14 @@
     <ClCompile Include="circle3.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="circle4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="circle5.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="circle6.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
