@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>
+using namespace std;
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -35,7 +36,7 @@ const char* fragmentShaderSource = R"(
 
         // 根据距离和进度值决定片段的颜色
         if (distance >= smallRadius && distance <= bigRadius) {
-            float angle = atan(position.y, position.x); // 计算片段与圆心的角度
+            float angle = atan(position.y, position.x)+5*atan(center.y,center.x); // 计算片段与圆心的角度
             float progressAngle = progress * 2.0 * 3.1415926; // 进度值转换为角度
 
             if (angle <= progressAngle) {
@@ -43,7 +44,7 @@ const char* fragmentShaderSource = R"(
                 FragColor = vec4(0.0, 1.0, 0.0, 1.0);
             } else {
                 // 非进度部分的颜色，这里使用灰色
-                FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+                FragColor = vec4(0.0, 0.5, 0.5, 1.0);
             }
         } else {
             // 超出两个圆的区域为透明
@@ -142,7 +143,9 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // 更新进度值，假设每2秒增加0.1来表示动画效果
-        float progress = fmod(deltaTime / 2.0f, 1.0f);
+        float progress = fmod(deltaTime / 10.0f, 1.0f);
+        float a = progress * 2.0 * 3.1415926;
+        cout << a << endl;
 
         // 更新uniform变量的值
         glUniform1f(progressLocation, progress);
