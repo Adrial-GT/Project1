@@ -19,7 +19,6 @@ const char* fragmentShaderSource = R"(
     #version 330 core
     uniform float progress; // 进度值，范围为0到1
     uniform vec2 resolution; // 屏幕分辨率
-
     out vec4 FragColor;
 
     void main() {
@@ -33,10 +32,10 @@ const char* fragmentShaderSource = R"(
         // 计算小圆和大圆的半径，这里我们假设屏幕高度的一半为大圆的半径
         float smallRadius = resolution.y / 4.0;
         float bigRadius = resolution.y / 2.0;
-
+        FragColor = vec4(1.0, 1.0, 0.0, 0.0);
         // 根据距离和进度值决定片段的颜色
         if (distance >= smallRadius && distance <= bigRadius) {
-            float angle = atan(position.y, position.x)+5*atan(center.y,center.x); // 计算片段与圆心的角度
+            float angle = atan(position.y, position.x)+3.1415926f; // 计算片段与圆心的角度
             float progressAngle = progress * 2.0 * 3.1415926; // 进度值转换为角度
 
             if (angle <= progressAngle) {
@@ -46,12 +45,13 @@ const char* fragmentShaderSource = R"(
                 // 非进度部分的颜色，这里使用灰色
                 FragColor = vec4(0.0, 0.5, 0.5, 1.0);
             }
-        } else {
+        }else {
             // 超出两个圆的区域为透明
-            FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+            FragColor = vec4(1.0, 1.0, 0.0, 0.0);
         }
     }
 )";
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -133,6 +133,11 @@ int main() {
     int progressLocation = glGetUniformLocation(shaderProgram, "progress");
     int resolutionLocation = glGetUniformLocation(shaderProgram, "resolution");
 
+
+
+
+
+
     // 渲染循环
     float startTime = glfwGetTime(); // 记录开始时间
     while (!glfwWindowShouldClose(window)) {
@@ -141,15 +146,17 @@ int main() {
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
+       
         // 更新进度值，假设每2秒增加0.1来表示动画效果
         float progress = fmod(deltaTime / 10.0f, 1.0f);
         float a = progress * 2.0 * 3.1415926;
-        cout << a << endl;
+        //cout << a << endl;
 
         // 更新uniform变量的值
         glUniform1f(progressLocation, progress);
         glUniform2f(resolutionLocation, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+
 
         // 绘制全屏四边形
         glUseProgram(shaderProgram);
@@ -168,3 +175,10 @@ int main() {
     glfwTerminate();
     return 0;
 }
+
+void processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+

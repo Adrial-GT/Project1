@@ -70,4 +70,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="other.md">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>
