@@ -69,9 +69,18 @@
     <ClCompile Include="circle6.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="7.3.camera_mouse_zoom\camera_mouse_zoom.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="other.md">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="7.3.camera_mouse_zoom\7.3.camera.fs">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="7.3.camera_mouse_zoom\7.3.camera.vs">
       <Filter>源文件</Filter>
     </None>
   </ItemGroup>

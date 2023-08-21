@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\glad\src\glad.c" />
+    <ClCompile Include="7.3.camera_mouse_zoom\camera_mouse_zoom.cpp" />
     <ClCompile Include="box_3d.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -204,6 +205,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="7.3.camera_mouse_zoom\7.3.camera.fs" />
+    <None Include="7.3.camera_mouse_zoom\7.3.camera.vs" />
     <None Include="other.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
