@@ -72,6 +72,9 @@
     <ClCompile Include="7.3.camera_mouse_zoom\camera_mouse_zoom.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="framebuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="other.md">
