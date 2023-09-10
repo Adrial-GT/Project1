@@ -466,3 +466,37 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 //    vec4 texColor2 = texture(texture2, TexCoord);
 //    FragColor = mix(texColor1, texColor2, 0.5);
 //}
+
+
+
+
+
+//#version 330 core
+//layout(location = 0) in vec3 aPos;
+//layout(location = 1) in vec2 aTexCoord;
+//
+//out vec2 TexCoord;
+//
+//uniform mat4 model;
+//uniform mat4 view;
+//uniform mat4 projection;
+//uniform vec3 cameraPos;
+//
+//void main()
+//{
+//    vec3 toCamera = normalize(cameraPos - model[3].xyz);
+//    vec3 up = vec3(0.0, 1.0, 0.0); // 定义一个固定的上向量
+//
+//    // 计算右向量，确保上向量和视线向量垂直
+//    vec3 right = normalize(cross(up, toCamera));
+//
+//    // 重新计算上向量，确保右向量和视线向量垂直
+//    up = cross(toCamera, right);
+//
+//    mat3 billboardMatrix = mat3(right, up, toCamera); // 不需要翻转-Z轴
+//
+//    vec3 rotatedPos = billboardMatrix * aPos;
+//    gl_Position = projection * view * model * vec4(rotatedPos, 1.0);
+//
+//    TexCoord = aTexCoord;
+//}
