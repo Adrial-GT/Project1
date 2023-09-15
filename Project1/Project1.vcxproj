@@ -213,6 +213,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="2Dcar.md" />
     <None Include="7.3.camera_mouse_zoom\7.3.camera.fs" />
     <None Include="7.3.camera_mouse_zoom\7.3.camera.vs" />
     <None Include="other.md" />
